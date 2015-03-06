@@ -19,6 +19,7 @@ var app = express();
 
 // models
 var UserModel = require('./app/user/UserModel');
+var ProfileModel = require('./app/profile/ProfileModel');
 
 
 // view engine setup... views? you have no power here
