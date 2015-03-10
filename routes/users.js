@@ -3,21 +3,26 @@ var router = express.Router();
 
 var mongoose = require('mongoose');
 var User = require('../app/user/UserModel.js')
+var UserController = require('../app/user/UserController.js')
+
 
 /* GET /users listing. */
 router.get('/', function(req, res, next) {
+	UserController.getUsers(req, res);
+	/*
 	User.find(function (err, users) {
 		if (err) return next(err);
 		res.json(users);
-	});
+	});*/
 });
 
 /* POST /users */
 router.post('/', function(req, res, next) {
-	User.create(req.body, function (err, user) {
+	UserController.postUsers(req, res);
+	/*User.create(req.body, function (err, user) {
 		if (err) return next(err);
 		res.json(user);
-	});
+	});*/
 });
 
 /* GET /user/id */

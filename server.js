@@ -8,11 +8,15 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var passport = require('passport');
+var expressSession = require('express-session');
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+var dbConfig = require('./db.js');
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test'); // connect to db
+mongoose.connect(dbConfig.url);//'mongodb://localhost/test'); // connect to db
 
 var app = express();
 
@@ -21,6 +25,23 @@ var app = express();
 var UserModel = require('./app/user/UserModel');
 var ProfileModel = require('./app/profile/ProfileModel');
 
+// controllers
+var UserController = require('./app/user/UserController');
+
+
+app.use(expressSession({secret: 'shutthefuckuppatrick'}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function(user, done) {
+  done(null, user._id);
+});
+ 
+passport.deserializeUser(function(id, done) {
+  UserModel.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
 
 // view engine setup... views? you have no power here
 //app.set('views', path.join(__dirname, 'views'));
@@ -42,7 +63,13 @@ var port = process.env.PORT || 8080;
 
 // ROUTES
 app.use('/api', routes);
-app.use('/api/users', users);
+app.use('/api/login', users);
+
+// Create our Express router
+var router = express.Router();
+router.route('/api/login')
+    .post(UserController.postUsers)
+    .get(UserController.getUsers);
 
 
 // catch 404 and forward to error handler
